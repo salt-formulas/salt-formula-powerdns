@@ -15,7 +15,7 @@ PowerDNS server with MySQL backend
 	      host: localhost
 	      port: 3306
 	      name: pdns
-	      user: pdn
+	      user: pdns
 	      password: password
 
 Read more
