@@ -1,0 +1,11 @@
+
+{%- set server = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['powerdns'],
+        'service': 'powerdns',
+    },
+    'RedHat': {
+        'pkgs': ['powerdns'],
+        'service': 'powerdns',
+    },
+}, merge=salt['pillar.get']('powerdns:server')) %}
