@@ -5,13 +5,13 @@ powerdns_packages:
   pkg.installed:
   - names: {{ server.pkgs }}
 
-/etc/powerdns.conf:
+/etc/powerdns/pdns.conf:
   file.managed:
-  - source: salt://powerdns/files/powerdns.conf
+  - source: salt://powerdns/files/pdns.conf
   - template: jinja
   - user: root
   - group: root
-  - mode: 644
+  - mode: 600
   - require:
     - pkg: powerdns_packages
 
@@ -20,6 +20,6 @@ powerdns_service:
   - enable: true
   - name: {{ server.service }}
   - watch:
-    - file: /etc/powerdns.conf
+    - file: /etc/powerdns/pdns.conf
 
 {%- endif %}
