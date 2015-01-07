@@ -15,6 +15,26 @@ powerdns_packages:
   - require:
     - pkg: powerdns_packages
 
+{%- if server.backend.engine == 'mysql' %}
+
+powerdns_mysql_packages:
+  pkg.installed:
+  - names: {{ server.mysql_pkgs }}
+
+pdns.local.gmysql.conf:
+  file.managed:
+  - source: salt://powerdns/files/pdns.local.gmysql.conf
+  - template: jinja
+  - user: root
+  - group: root
+  - mode: 600
+  - require:
+    - pkg: powerdns_mysql_packages
+  - watch_in:
+    - service: powerdns_service
+
+{%- endif %}
+
 powerdns_service:
   service.running:
   - enable: true

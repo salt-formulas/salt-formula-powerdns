@@ -2,14 +2,30 @@
 {%- set server = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['pdns-server'],
+        'mysql_pkgs': ['pdns-backend-mysql'],
         'service': 'pdns',
         'config': '/etc/powerdns/pdns.conf',
         'local_config': '/etc/powerdns/pdns.d/pdns.local.conf',
+        'bind': {
+            'address': '0.0.0.0',
+            'port': '53'
+        },
+        'backend': {
+            'engine': 'mysql',
+        }
     },
     'RedHat': {
         'pkgs': ['pdns-server'],
+        'mysql_pkgs': ['pdns-backend-mysql'],
         'service': 'pdns',
         'config': '/etc/powerdns/pdns.conf',
         'local_config': '/etc/powerdns/pdns.d/pdns.local.conf',
+        'bind': {
+            'address': '0.0.0.0',
+            'port': '53'
+        },
+        'backend': {
+            'engine': 'mysql',
+        }
     },
 }, merge=salt['pillar.get']('powerdns:server')) %}
