@@ -21,7 +21,7 @@ powerdns_mysql_packages:
   pkg.installed:
   - names: {{ server.mysql_pkgs }}
 
-pdns.local.gmysql.conf:
+/etc/powerdns/pdns.local.gmysql.conf:
   file.managed:
   - source: salt://powerdns/files/pdns.local.gmysql.conf
   - template: jinja
