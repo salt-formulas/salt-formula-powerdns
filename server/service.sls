@@ -33,6 +33,9 @@ powerdns_mysql_packages:
   - watch_in:
     - service: powerdns_service
 
+/etc/powerdns/pdns.d/pdns.simplebind.conf
+  file.absent
+
 {%- endif %}
 
 powerdns_service:
