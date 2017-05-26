@@ -1,0 +1,5 @@
+salt-formula-powerdns (0.1) xenial; urgency=low
+
+  * Initial release
+
+ -- Ivan Suzdal <mos-linux@mirantis.com>  Wed, 31 May 2017 15:13:23 +0300

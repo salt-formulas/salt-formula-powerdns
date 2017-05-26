@@ -1,9 +1,10 @@
 {%- from "powerdns/map.jinja" import server with context %}
+{%- from "powerdns/server/packages.jinja" import packages with context %}
 {%- if server.enabled %}
 
 powerdns_packages:
   pkg.installed:
-  - names: {{ server.pkgs }}
+  - names: {{ packages.pkgs }}
 
 /etc/powerdns/pdns.conf:
   file.managed:
@@ -14,29 +15,8 @@ powerdns_packages:
   - mode: 600
   - require:
     - pkg: powerdns_packages
-
-{%- if server.backend.engine == 'mysql' %}
-
-powerdns_mysql_packages:
-  pkg.installed:
-  - names: {{ server.mysql_pkgs }}
-
-/etc/powerdns/pdns.d/pdns.local.gmysql.conf:
-  file.managed:
-  - source: salt://powerdns/files/pdns.local.gmysql.conf
-  - template: jinja
-  - user: root
-  - group: root
-  - mode: 600
-  - require:
-    - pkg: powerdns_mysql_packages
-  - watch_in:
-    - service: powerdns_service
-
-/etc/powerdns/pdns.d/pdns.simplebind.conf:
-  file.absent
-
-{%- endif %}
+  - require_in:
+    - service: {{ server.service }}
 
 powerdns_service:
   service.running:

@@ -1,0 +1,27 @@
+{%- set packages = salt['grains.filter_by']({
+    'default': {
+        'backends': {
+            'mysql': ['pdns-backend-mysql'],
+            'geoip': ['pdns-backend-geoip'],
+            'ldap': ['pdns-backend-ldap'],
+            'lua': ['pdns-backend-lua'],
+            'mydns': ['pdns-backend-mydns'],
+            'remote': ['pdns-backend-remote'],
+            'tinydns': ['pdns-backend-tinydns'],
+        },
+    },
+    'Debian': {
+        'pkgs': ['pdns-server'],
+        'backends': {
+            'sqlite': ['pdns-backend-sqlite3'],
+            'pgsql': ['pdns-backend-pgsql'],
+        },
+    },
+    'RedHat': {
+        'pkgs': ['pdns'],
+        'backends': {
+            'sqlite': ['pdns-backend-sqlite'],
+            'pgsql': ['pdns-backend-postgresql'],
+        },
+    },
+}, grain='os_family') %}
