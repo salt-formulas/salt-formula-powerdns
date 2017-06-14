@@ -19,7 +19,17 @@
             'port': 53,
         },
         'default_soa_name': 'a.very.best.power.dns.server',
-        'soa_minimum_ttl': 3600
+        'soa_minimum_ttl': 3600,
+        'axfr_ips': [ '127.0.0.1' ],
+        'version_string': 'powerdns',
+        'webserver': {
+            'enabled': false,
+            'address': '127.0.0.1',
+            'port': 8081,
+        },
+        'api': {
+            'enabled': false,
+        },
     },
     'RedHat': {
         'service': 'pdns',
@@ -40,6 +50,16 @@
             'port': 53,
         },
         'default_soa_name': 'a.very.best.power.dns.server',
-        'soa_minimum_ttl': 3600
+        'soa_minimum_ttl': 3600,
+        'axfr_ips': '127.0.0.1',
+        'version_string': 'powerdns',
+        'webserver': {
+            'enabled': false,
+            'address': '127.0.0.1',
+            'port': 8081,
+        },
+        'api': {
+            'enabled': false,
+        },
     },
 }, merge=salt['pillar.get']('powerdns:server')) %}
