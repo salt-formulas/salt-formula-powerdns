@@ -5,7 +5,7 @@ set -e
 
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 METADATA=${CURDIR}/../metadata.yml
-FORMULA_NAME="$(awk '/^name:/ {print $2}' ${METADATA})"
+FORMULA_NAME=$(cat $METADATA | python -c "import sys,yaml; print yaml.load(sys.stdin)['name']")
 
 ## Overrideable parameters
 PILLARDIR=${PILLARDIR:-${CURDIR}/pillar}
@@ -18,7 +18,7 @@ SALT_PILLAR_DIR=${SALT_PILLAR_DIR:-${BUILDDIR}/pillar_root}
 SALT_CONFIG_DIR=${SALT_CONFIG_DIR:-${BUILDDIR}/salt}
 SALT_CACHE_DIR=${SALT_CACHE_DIR:-${SALT_CONFIG_DIR}/cache}
 
-SALT_OPTS="${SALT_OPTS} --retcode-passthrough --local -c ${SALT_CONFIG_DIR}"
+SALT_OPTS="${SALT_OPTS} --retcode-passthrough --local -c ${SALT_CONFIG_DIR} --log-file=/dev/null"
 
 if [ "x${SALT_VERSION}" != "x" ]; then
     PIP_SALT_VERSION="==${SALT_VERSION}"
@@ -44,6 +44,7 @@ setup_pillar() {
     [ ! -d ${SALT_PILLAR_DIR} ] && mkdir -p ${SALT_PILLAR_DIR}
     echo "base:" > ${SALT_PILLAR_DIR}/top.sls
     for pillar in ${PILLARDIR}/*; do
+        grep ${FORMULA_NAME}: ${pillar} &>/dev/null || continue
         state_name=$(basename ${pillar%.sls})
         echo -e "  ${state_name}:\n    - ${state_name}" >> ${SALT_PILLAR_DIR}/top.sls
     done
@@ -56,6 +57,7 @@ setup_salt() {
 
     echo "base:" > ${SALT_FILE_DIR}/top.sls
     for pillar in ${PILLARDIR}/*.sls; do
+        grep ${FORMULA_NAME}: ${pillar} &>/dev/null || continue
         state_name=$(basename ${pillar%.sls})
         echo -e "  ${state_name}:\n    - ${FORMULA_NAME}" >> ${SALT_FILE_DIR}/top.sls
     done
@@ -64,6 +66,7 @@ setup_salt() {
 file_client: local
 cachedir: ${SALT_CACHE_DIR}
 verify_env: False
+minion_id_caching: False
 
 file_roots:
   base:
@@ -85,7 +88,7 @@ fetch_dependency() {
     dep_metadata="${dep_root}/metadata.yml"
 
     [ -d /usr/share/salt-formulas/env/${dep_name} ] && log_info "Dependency $dep_name already present in system-wide salt env" && return 0
-    [ -d ${dep_root} ] && log_info "Dependency ${dep_name} already fetched" && return 0
+    [ -d $dep_root ] && log_info "Dependency $dep_name already fetched" && return 0
 
     log_info "Fetching dependency $dep_name"
     [ ! -d ${DEPSDIR} ] && mkdir -p ${DEPSDIR}
@@ -125,6 +128,7 @@ prepare() {
 
 run() {
     for pillar in ${PILLARDIR}/*.sls; do
+        grep ${FORMULA_NAME}: ${pillar} &>/dev/null || continue
         state_name=$(basename ${pillar%.sls})
         salt_run --id=${state_name} state.show_sls ${FORMULA_NAME} || (log_err "Execution of ${FORMULA_NAME}.${state_name} failed"; exit 1)
     done
