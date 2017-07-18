@@ -30,6 +30,27 @@ init_sqlite_db:
       - file: {{ server.backend.dbpath }}
     - creates: {{ server.backend.dbpath }}/{{ server.backend.dbname }}
 
+{%- if server.supermasters is defined %}
+{%- for supermaster in server.supermasters %}
+use_supermaster_{{ supermaster.ip }}:
+  sqlite3.row_present:
+    - db: {{ server.backend.dbpath }}/{{ server.backend.dbname }}
+    - table: supermasters
+    - where_sql: ip="{{ supermaster.ip }}"
+    - data:
+        ip: {{ supermaster.ip }}
+        nameserver: {{ supermaster.nameserver }}
+        account: {{supermaster.account }}
+    {%- if server.overwrite_supermasters is defined %}
+    - update: {{ server.overwrite_supermasters }}
+    {%- endif %}
+    - require:
+      - init_sqlite_db
+    - watch_in:
+      - service: powerdns_service
+{%- endfor %}
+{%- endif %}
+
 /etc/powerdns/pdns.d/pdns.local.gsqlite3.conf:
   file.managed:
   - source: salt://powerdns/files/backends/sqlite.conf
