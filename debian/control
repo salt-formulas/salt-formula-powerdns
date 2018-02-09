@@ -9,6 +9,6 @@ Vcs-Git: https://github.com/salt-formulas/salt-formula-powerdns.git
 
 Package: salt-formula-powerdns
 Architecture: all
-Depends: ${misc:Depends}, salt-master
+Depends: ${misc:Depends}
 Description: PowerDNS salt formula
  Install and configure PowerDNS server.
