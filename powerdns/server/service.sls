@@ -1,6 +1,6 @@
 {%- from "powerdns/map.jinja" import server with context %}
 {%- from "powerdns/server/packages.jinja" import packages with context %}
-{%- if server.enabled %}
+{%- if server.get('enabled', False) %}
 
 powerdns_packages:
   pkg.installed:
