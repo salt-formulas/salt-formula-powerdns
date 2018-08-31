@@ -54,9 +54,9 @@ powerdns_init_mysql_db:
 {%- endif %}
     - connection_user: {{ mysql_connection_args.connection_user }}
     - connection_pass: {{ mysql_connection_args.connection_pass }}
-{%- endif %}
     - require:
       - file: /etc/powerdns/dbtemplate.sql
+{%- endif %}
 {%- if server.supermasters is defined %}
 {% for supermaster in server.supermasters %}
 use_supermaster_{{ supermaster.ip }}:
