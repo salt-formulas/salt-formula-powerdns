@@ -2,9 +2,14 @@ powerdns:
   server:
     enabled: true
     backend:
-      engine: sqlite
-      dbname: pdns.sqlite3
-      dbpath: /var/lib/powerdns
+      engine: mysql
+      host: 127.0.0.1
+      port: 3306
+      dbname: powerdns
+      user: powerdns
+      password: powerdns
+      timeout: 10
+      dnssec: on
     bind:
       address: 127.0.0.1
       port: 53

@@ -21,6 +21,9 @@ powerdns_packages:
 powerdns_service:
   service.running:
   - enable: true
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - name: {{ server.service }}
   - watch:
     - file: /etc/powerdns/pdns.conf

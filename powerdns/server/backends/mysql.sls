@@ -36,13 +36,20 @@ powerdns_mysql_packages:
     - require:
       - pkg: powerdns_mysql_packages
 
+{%- set powerdns_db_tables = False %}
+
+{%- if grains.get('noservices') is not defined %}
 {%- set powerdns_db_tables = salt['mysql.db_tables'](server.backend.dbname, **mysql_connection_args) %}
+{%- endif %}
 {%- if not powerdns_db_tables %}
 powerdns_init_mysql_db:
   mysql_query.run_file:
     - database: {{ server.backend.dbname }}
     - query_file: /etc/powerdns/dbtemplate.sql
     - connection_charset: {{ mysql_connection_args.connection_charset }}
+    {%- if grains.get('noservices') %}
+    - onlyif: /bin/false
+    {%- endif %}
 {%- if mysql_connection_args.connection_default_file %}
     - connection_default_file: {{ mysql_connection_args.connection_default_file }}
 {%- endif %}
@@ -70,6 +77,9 @@ use_supermaster_{{ supermaster.ip }}:
         account: {{supermaster.account }}
     {%- if server.overwrite_supermasters is defined %}
     - update: {{ server.overwrite_supermasters }}
+    {%- endif %}
+    {%- if grains.get('noservices') %}
+    - onlyif: /bin/false
     {%- endif %}
     - connection_charset: {{ mysql_connection_args.connection_charset }}
 {%- if mysql_connection_args.connection_default_file %}
